@@ -1,0 +1,39 @@
+{
+  "bannerList": [
+    {
+      "id": "b_001",
+      "title": "Share Now to Share the Future",
+      "image": "./images/one/banner01.jpg"
+    },
+    {
+      "id": "b_002",
+      "title": "China Night, 2020 TIFF",
+      "image": "./images/one/banner02.jpg"
+    },
+    {
+      "id": "b_003",
+      "title": "Join the CAE",
+      "image": "./images/one/banner03.jpg"
+    }
+  ],
+  "aboutUsList": [
+    {
+      "id": "us_001",
+      "name": "",
+      "image": "./images/one/us-1.jpg"
+    },
+    {
+      "id": "us_002",
+      "name": "",
+      "image": "./images/one/us-2.jpg"
+    },
+    {
+      "id": "us_003",
+      "name": "",
+      "image": "./images/one/us-3.jpg"
+    }
+  ],
+  "currPosition": {
+    "en": "Current Position : home"
+  }  
+}

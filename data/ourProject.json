@@ -1,0 +1,11 @@
+{
+  "banner": {
+    "id": "b_001",
+    "title": "",
+    "image": "./images/ourProject/banner.png"
+  },
+  "currPosition": {
+    "en": "Current Position : home > Our Project > Current Project",
+    "cn": "当前位置 : 首页 > 主要项目 > 当前项目"
+  }
+}
