@@ -1,0 +1,546 @@
+---------------------------------------------公用使用sql-----------------------------------------------------
+select * from S00T1_PD_PARM;
+select * from S00T1_LIST_PARVAL where PARM_SN='1000070001';
+select * from S00T1_SCOP_PARVAL;
+---------------------------------------------definition流程-----------------------------------------------------
+select KEYID                 as keyid,--执行控制ID
+       EXCUTESTATUS          as excutestatus,--执行状态 0,开；1,关
+       KEYDESC               as keydesc,--描述
+       Tms                   as tms,--时间戳
+       Oprgday_prd           as oprgdayPrd,--营业日期
+       VNo                   as vno,--version
+       Dac_Verf              as dacVerf,--校验字段
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,--交易发起渠道类别
+       TXN_ITT_CHNL_ID       as txnIttChnlId,--交易发起渠道编号
+       Multi_Tenancy_Id      as multiTenancyId,--多实体标识
+       Rsrv_Fld_Dsc          as rsrvFldDsc--预留字段
+from S08T1_EXECUTABLE_REGISTER
+
+where KEYID = 'ab.definition.dispatch.global';--1
+select CD_VAL from S00T1_LIST_PARVAL where PARM_SN='1000080001' and TECH_CD_VAL='zeroBasket';--2  0开1关
+select CD_VAL from S00T1_LIST_PARVAL where PARM_SN='1000080001' and TECH_CD_VAL='nonZeroBaskets';--3  0开1关
+select Tsk_Def_ID              as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       Csz_Txn_Nm              as cszTxnNm,--定制交易名称，任务名称/任务实例名称，客户给批量任务起的任务别名。
+       Apl_Btch_No             as aplBtchNo,--应用批次号，每个异步应用场景自己指定的编号，应用组自己决定即可，无需全局唯一，如果应用组自己有唯一性需求，需自行保证
+       Lvl1_Cl                 as lvl1Cl,--一级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+       Lvl2_Cl                 as lvl2Cl,--二级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+       PD_Cmpt_No              as pdCmptNo,--产品部件号，如11,21等
+       Aschn_Tsk_TpCd          as aschnTskTpcd,--异步任务类型代码，区分任务是单作业任务还是作业流任务，1-单作业任务，2-作业流任务
+       Tsk_Def_StCd            as tskDefStcd,--任务定义状态代码，0-正常，1-取消
+       Rsrvtn_Tsk_ExMd_CD      as rsrvtnTskExmdCd,--预约任务执行方式代码，0-实时、1-定时、2-周期，0-实时、1-定时、2-周期
+       Rsrvtn_Exec_Dt          as rsrvtnExecDt,--预约执行日期，定时任务的执行日期，定时任务必输
+       Rsrvtn_Exec_Tm          as rsrvtnExecTm,--预约执行时间，定时任务的执行时间、周期任务的执行日执行时间或开始执行时间，定时、周期任务必输
+       Rsrvtn_StDt             as rsrvtnStdt,--预约开始日期，周期任务的开始日期，周期任务必输
+       Rsrvtn_EdDt             as rsrvtnEddt,--预约结束日期，周期任务的结束日期，周期任务可选，不填则默认2099-12-31
+       Pln_StTm                as plnSttm,--计划开始时间，计划开始时间
+       Pln_Edtm                as plnEdtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+       Rsrvtn_Exec_Cyc_CD      as rsrvtnExecCycCd,--预约执行周期代码，1-按日，2-按月，3-按周，4-月末，5-日历
+       CronExp                 as cronexp,--cron表达式
+       Cyc_Tsk_Rsrvtn_Exec_Day as cycTskRsrvtnExecDay,--周期任务预约执行日，针对2和3，如果是2，则是日期按逗号隔开；如果是3,则是1-7按逗号隔开，针对2和3，如果是2，则是日期按逗号隔开；如果是3,则是1-7按逗号隔开
+       Exec_Frq                as execFrq,--执行频率，针对按日和按周,1表示每日/每周，2表示隔日/隔周，不填则默认1，不得小于或等于0，针对按日和按周,1表示每日/每周，2表示隔日/隔周，不填则默认1，不得小于或等于0
+       Rcv_Psh_Svc_Cmpt_Nm     as rcvPshSvcCmptNm,--接收推送服务组件名，只针对周期任务，周期任务如果需要推送下次任务实例的信息，填入接收推送的service在Spring容器的bean-id，该service需要实现ISglTskRecvService；没有需求的留空即可
+       Tsk_Def_Beg_Job_ID      as tskDefBegJobId,--任务定义起始作业编号，任务定义首作业编号，作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_End_Job_ID      as tskDefEndJobId,--任务定义末作业编号，任务定义末作业编号，作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Exec_Day_Rvl_MtdCD      as execDayRvlMtdcd,--执行日循环方式代码，只针对周期任务，执行日是否重复执行，0-不重复执行，1-重复并发执行（即使有任务实例在运行，下一个任务实例到点也正常启动），2-重复不并发执行（有任务实例在运行，下一个任务实例跳过执行），留空则默认不重复
+       Exec_Day_EdTm           as execDayEdtm,--执行日结束时间，只针对周期任务，执行日的结束时间，上述标志=1时必输，与预约执行时间配对
+       Exec_Cnt                as execCnt,--执行次数，执行日执行次数，不定义执行日结束时间时，当当日执行次数等于此字段值时，不再继续执行，否则继续生成实例。
+       Tsk_Itrv_Tm             as tskItrvTm,--任务间隔时间，只针对周期任务，执行日任务间隔秒数，当天内循环标志=1或2时必输
+       Hol_ExMd_CD             as holExmdCd,--节假日执行方式代码，只针对周期任务，0-正常执行、1-提前到上一工作日、2-推后到下一工作日、3-取消，默认正常执行
+       Yr_Wrk_Mo               as yrWrkMo,--年工作月，1-12位填0(oldTskPcsDt不执行)或1(执行)，不填则默认每月执行
+       Job_Nxt_Exec_Tm         as jobNxtExecTm,--作业下次执行时间
+       Exmp_Gen_Fail_Cnt       as exmpGenFailCnt,--实例生成失败次数
+       CshPbMsgRpDmn_Inf       as cshpbmsgrpdmnInf,
+       Tsk_Pcs_Dt              as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                     as tms,--时间戳
+       Oprgday_prd             as oprgdayPrd,--营业日期
+       VNo                     as vno,--version
+       Dac_Verf                as dacVerf,--校验字段
+       TXN_ITT_CHNL_CGY_CODE   as txnIttChnlCgyCode,--交易发起渠道类别
+       TXN_ITT_CHNL_ID         as txnIttChnlId,--交易发起渠道编号
+       Multi_Tenancy_Id        as multiTenancyId,--多实体标识
+       Rsrv_Fld_Dsc            as rsrvFldDsc--预留字段
+from S08T1_ASCHN_TSK_DEF
+where Tsk_Def_ID = '201905111228Consistency';--5
+
+select Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       Job_Nm                as jobNm,--作业名称，作业名称
+       JOB_DESCRIPTION       as jobDescription,--作业描述，作业描述
+       BtchPcs_Job_Lvl       as btchpcsJobLvl,--批处理作业级别，作业优先级
+       Fail_Cnt              as failCnt,--失败次数，最大重新执行次数
+       Svc_Cmpt_Nm           as svcCmptNm,--产品部件号，所需调用的Service的Spring容器bean-id
+       Psh_Bfr_Pcsg_Svc_Nm   as pshBfrPcsgSvcNm,--推送前处理服务名，前处理服务组件名，用于通知应用进行前处理，并返回待处理数据列表及是否需要后续查询和查询键值，需实现IPreProcessService接口
+       Psh_Af_Pcsg_Svc_Nm    as pshAfPcsgSvcNm,--推送后处理服务名，后前处理服务组件名，需实现IPostProcessService接口
+       Ovtm_Tm               as ovtmTm,--超时时间，任务实例的超时时间，不填则默认2小时
+       Job_Grp_Def_ID        as jobGrpDefId,--作业组定义编号，作业组定义编号，作业流：任务编号（14位时间戳+F+4位顺序号）+2位顺序编号
+       Job_Call_Fcn_TpCd     as jobCallFcnTpcd,--作业调用功能类型代码，区分作业调用的功能，可能是1-调用P8功能、2-调用脚本功能、3-调用分布式平台，4-任务首作业、5-任务末作业、6-作业组首作业、7-作业组末作业
+       Fail_Rtr_Itrv_Tm      as failRtrItrvTm,--失败重试间隔时间
+       Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,--时间戳
+       Oprgday_prd           as oprgdayPrd,--营业日期
+       VNo                   as vno,--version
+       Dac_Verf              as dacVerf,--校验字段
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,--交易发起渠道类别
+       TXN_ITT_CHNL_ID       as txnIttChnlId,--交易发起渠道编号
+       Multi_Tenancy_Id      as multiTenancyId,--多实体标识
+       Rsrv_Fld_Dsc          as rsrvFldDsc--预留字段
+from S08T1_JOB_DEF
+where Tsk_Def_ID = '201905111228Consistency';--6
+
+select Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Frt_Job_Def_ID        as frtJobDefId,--前置作业定义编号，#前置作业定义编号，作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,--时间戳
+       Oprgday_prd           as oprgdayPrd,--营业日期
+       VNo                   as vno,--version
+       Dac_Verf              as dacVerf,--校验字段
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,--交易发起渠道类别
+       TXN_ITT_CHNL_ID       as txnIttChnlId,--交易发起渠道编号
+       Multi_Tenancy_Id      as multiTenancyId,--多实体标识
+       Rsrv_Fld_Dsc          as rsrvFldDsc--预留字段
+from S08T1_JOB_REL;
+select Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Frt_Job_Def_ID        as frtJobDefId,--前置作业定义编号，#前置作业定义编号，作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,--时间戳
+       Oprgday_prd           as oprgdayPrd,--营业日期
+       VNo                   as vno,--version
+       Dac_Verf              as dacVerf,--校验字段
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,--交易发起渠道类别
+       TXN_ITT_CHNL_ID       as txnIttChnlId,--交易发起渠道编号
+       Multi_Tenancy_Id      as multiTenancyId,--多实体标识
+       Rsrv_Fld_Dsc          as rsrvFldDsc--预留字段
+from S08T1_JOB_REL
+where Tsk_Def_ID = '201905111228Consistency';
+
+update
+    S08T1_ASCHN_TSK_DEF
+set Csz_Txn_Nm = #{cszTxnNm, jdbcType= VARCHAR},
+    Apl_Btch_No = #{aplBtchNo, jdbcType= VARCHAR},
+    Lvl1_Cl = #{lvl1Cl, jdbcType= VARCHAR},
+    Lvl2_Cl = #{lvl2Cl, jdbcType= VARCHAR},
+    PD_Cmpt_No = #{pdCmptNo, jdbcType= VARCHAR},
+    Aschn_Tsk_TpCd = #{aschnTskTpcd, jdbcType= VARCHAR},
+    Tsk_Def_StCd = #{tskDefStcd, jdbcType= VARCHAR},
+    Rsrvtn_Tsk_ExMd_CD = #{rsrvtnTskExmdCd, jdbcType= VARCHAR},
+    Rsrvtn_Exec_Dt = #{rsrvtnExecDt, jdbcType= VARCHAR},
+    Rsrvtn_Exec_Tm = #{rsrvtnExecTm, jdbcType= VARCHAR},
+    Rsrvtn_StDt = #{rsrvtnStdt, jdbcType= VARCHAR},
+    Rsrvtn_EdDt = #{rsrvtnEddt, jdbcType= VARCHAR},
+    Pln_StTm = #{plnSttm, jdbcType= VARCHAR},
+    Pln_Edtm = #{plnEdtm, jdbcType= VARCHAR},
+    Rsrvtn_Exec_Cyc_CD = #{rsrvtnExecCycCd, jdbcType= VARCHAR},
+    CronExp = #{cronexp, jdbcType= VARCHAR},
+    Cyc_Tsk_Rsrvtn_Exec_Day = #{cycTskRsrvtnExecDay, jdbcType= VARCHAR},
+    Exec_Frq = #{execFrq, jdbcType= VARCHAR},
+    Rcv_Psh_Svc_Cmpt_Nm = #{rcvPshSvcCmptNm, jdbcType= VARCHAR},
+    Tsk_Def_Beg_Job_ID = #{tskDefBegJobId, jdbcType= VARCHAR},
+    Tsk_Def_End_Job_ID = #{tskDefEndJobId, jdbcType= VARCHAR},
+    Exec_Day_Rvl_MtdCD = #{execDayRvlMtdcd, jdbcType= VARCHAR},
+    Exec_Day_EdTm = #{execDayEdtm, jdbcType= VARCHAR},
+    Exec_Cnt = #{execCnt, jdbcType= VARCHAR},
+    Tsk_Itrv_Tm = #{tskItrvTm, jdbcType= VARCHAR},
+    Hol_ExMd_CD = #{holExmdCd, jdbcType= VARCHAR},
+    Yr_Wrk_Mo = #{yrWrkMo, jdbcType= VARCHAR},
+    Job_Nxt_Exec_Tm = #{jobNxtExecTm, jdbcType= VARCHAR},
+    Exmp_Gen_Fail_Cnt = #{exmpGenFailCnt, jdbcType= VARCHAR},
+    CshPbMsgRpDmn_Inf = #{cshpbmsgrpdmnInf, jdbcType= CLOB},
+    Tsk_Pcs_Dt = #{tskPcsDt, jdbcType= VARCHAR},
+    Tms = #{tmsInDo, jdbcType= VARCHAR},
+    Oprgday_prd = #{oprgdayPrd, jdbcType= VARCHAR},
+    VNo = Vno + 1,
+    Dac_Verf = #{dacVerf, jdbcType= VARCHAR},
+    Rsrv_Fld_Dsc = #{rsrvFldDsc, jdbcType= CLOB},
+    TXN_ITT_CHNL_CGY_CODE = #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    TXN_ITT_CHNL_ID = #{txnIttChnlId, jdbcType= VARCHAR},
+    Multi_Tenancy_Id = #{multiTenancyId, jdbcType= VARCHAR}
+where
+    Tsk_Def_ID=#{tskDefId, jdbcType= VARCHAR}
+    and
+    Job_Nxt_Exec_Tm= #{oldJobNxtExecTm, jdbcType= VARCHAR};
+update
+    S08T1_JOB_DEF
+set Tsk_Def_ID = #{tskDefId, jdbcType= VARCHAR},
+    Job_Nm = #{jobNm, jdbcType= VARCHAR},
+    JOB_DESCRIPTION = #{jobDescription, jdbcType= VARCHAR},
+    BtchPcs_Job_Lvl = #{btchpcsJobLvl, jdbcType= VARCHAR},
+    Fail_Cnt = #{failCnt, jdbcType= VARCHAR},
+    Svc_Cmpt_Nm = #{svcCmptNm, jdbcType= VARCHAR},
+    Psh_Bfr_Pcsg_Svc_Nm = #{pshBfrPcsgSvcNm, jdbcType= VARCHAR},
+    Psh_Af_Pcsg_Svc_Nm = #{pshAfPcsgSvcNm, jdbcType= VARCHAR},
+    Ovtm_Tm = #{ovtmTm, jdbcType= VARCHAR},
+    Job_Grp_Def_ID = #{jobGrpDefId, jdbcType= VARCHAR},
+    Job_Call_Fcn_TpCd = #{jobCallFcnTpcd, jdbcType= VARCHAR},
+    Fail_Rtr_Itrv_Tm = #{failRtrItrvTm, jdbcType= VARCHAR},
+    Tsk_Pcs_Dt = #{tskPcsDt, jdbcType= VARCHAR},
+    Tms = #{tms, jdbcType= VARCHAR},
+    Oprgday_prd = #{oprgdayPrd, jdbcType= VARCHAR},
+    VNo = #{vno, jdbcType= VARCHAR},
+    Dac_Verf = #{dacVerf, jdbcType= VARCHAR},
+    TXN_ITT_CHNL_CGY_CODE = #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    TXN_ITT_CHNL_ID = #{txnIttChnlId, jdbcType= VARCHAR},
+    Multi_Tenancy_Id = #{multiTenancyId, jdbcType= VARCHAR},
+    Rsrv_Fld_Dsc = #{rsrvFldDsc, jdbcType= CLOB}
+where
+    Job_Def_ID=#{jobDefId, jdbcType= VARCHAR}
+    and
+    vno=#{vno, jdbcType= VARCHAR}-1;
+insert into S08T1_ASCHN_TSK_EXMP
+(SGL_TSK_ID,--次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+ Tsk_Def_ID,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+ Csz_Txn_Nm,--定制交易名称，任务名称/任务实例名称，客户给批量任务起的任务别名。
+ Apl_Btch_No,--应用批次号，每个异步应用场景自己指定的编号，应用组自己决定即可，无需全局唯一，如果应用组自己有唯一性需求，需自行保证
+ Lvl1_Cl,--一级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+ Lvl2_Cl,--二级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+ PD_Cmpt_No,--产品部件号，如11,21等
+ JFRM_TSK_EXEC_ST_CD,--Java框架任务执行状态代码，任务实例状态，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消，9-年结暂停，待加入：等待前置作业执行、跳过并成功、人为终止、超时终止、异常终止
+ Rsrvtn_StTm,--预约开始时间，预约开始时间
+ Pln_StTm,--计划开始时间，计划开始时间
+ Pln_Edtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+ Exec_StTm,--执行开始时间，实际开始时间
+ Exec_EdTm,--执行结束时间，结束时间
+ Crt_Tms,--创建时间戳
+ Aschn_Tsk_TpCd,--异步任务类型代码，区分任务是单作业任务还是作业流任务，1-单作业任务，2-作业流任务
+ Tsk_Exmp_Beg_Job_ID,--任务实例起始作业编号，任务实例首作业编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+ Tsk_Exmp_End_Job_ID,--任务实例末作业编号，任务实例末作业编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+ Aschn_Tsk_Dsc,--异步任务描述，任务执行描述
+ CshPbMsgRpDmn_Inf,
+ Tsk_Pcs_Dt,--任务处理日期，任务处理日期，用于数据库分区
+ Tms,
+ Oprgday_prd,
+ VNo,
+ Dac_Verf,
+ TXN_ITT_CHNL_CGY_CODE,
+ TXN_ITT_CHNL_ID,
+ Multi_Tenancy_Id,
+ Rsrv_Fld_Dsc)
+values (
+           #{sglTskId, jdbcType= VARCHAR},
+    #{tskDefId, jdbcType= VARCHAR},
+    #{cszTxnNm, jdbcType= VARCHAR},
+    #{aplBtchNo, jdbcType= VARCHAR},
+    #{lvl1Cl, jdbcType= VARCHAR},
+    #{lvl2Cl, jdbcType= VARCHAR},
+    #{pdCmptNo, jdbcType= VARCHAR},
+    #{jfrmTskExecStCd, jdbcType= VARCHAR},
+    #{rsrvtnSttm, jdbcType= VARCHAR},
+    #{plnSttm, jdbcType= VARCHAR},
+    #{plnEdtm, jdbcType= VARCHAR},
+    #{execSttm, jdbcType= VARCHAR},
+    #{execEdtm, jdbcType= VARCHAR},
+    #{crtTms, jdbcType= VARCHAR},
+    #{aschnTskTpcd, jdbcType= VARCHAR},
+    #{tskExmpBegJobId, jdbcType= VARCHAR},
+    #{tskExmpEndJobId, jdbcType= VARCHAR},
+    #{aschnTskDsc, jdbcType= VARCHAR},
+    #{cshpbmsgrpdmnInf, jdbcType= CLOB},
+    #{tskPcsDt, jdbcType= VARCHAR},
+    #{tms, jdbcType= VARCHAR},
+    #{oprgdayPrd, jdbcType= VARCHAR},
+    #{vno, jdbcType= VARCHAR},
+    #{dacVerf, jdbcType= VARCHAR},
+    #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    #{txnIttChnlId, jdbcType= VARCHAR},
+    #{multiTenancyId, jdbcType= VARCHAR},
+    #{rsrvFldDsc, jdbcType= CLOB}
+);
+
+insert into S08T1_JOB_EXMP
+(Job_Tsk_Exmp_ID,--作业任务实例编号，作业实例编号，单作业：等同于单次任务标识 作业流：作业组实例编号+3位顺序号
+ Job_Def_ID,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+ Tsk_Def_ID,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+ SGL_TSK_ID,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+ Job_Nm,--作业名称，作业名称
+ JOB_DESCRIPTION,--作业描述，作业描述
+ BtchPcs_Job_Lvl,--批处理作业级别，作业优先级
+ Fail_Cnt,--失败次数，最大重新执行次数
+ Svc_Cmpt_Nm,--产品部件号，所需调用的Service的Spring容器bean-id
+ Psh_Bfr_Pcsg_Svc_Nm,--推送前处理服务名，前处理服务组件名，用于通知应用进行前处理，并返回待处理数据列表及是否需要后续查询和查询键值，需实现IPreProcessService接口
+ Psh_Af_Pcsg_Svc_Nm,--推送后处理服务名，后前处理服务组件名，需实现IPostProcessService接口
+ Ovtm_Tm,--超时时间，任务实例的超时时间，不填则默认2小时
+ Crt_Tms,--创建时间戳
+ Pln_StTm,--计划开始时间，计划开始时间
+ Pln_Edtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+ Exec_StTm,--执行开始时间，实际开始时间
+ Exec_EdTm,--执行结束时间，结束时间
+ Alrdy_Fail_Cnt,--已失败次数，作业已经失败次数
+ Job_Exmp_Exec_StCd,--作业实例执行状态代码，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消
+ Job_Exmp_Asst_StCd,--作业实例辅助状态代码，1-正常执行成功，2-跳过并成功，3-异常失败，4-超时失败，5-人为终止失败
+ Job_Call_Fcn_TpCd,--作业调用功能类型代码，区分作业调用的功能，可能是1-调用P8功能、2-调用脚本功能、3-调用分布式平台，4-任务首作业、5-任务末作业、6-作业组首作业、7-作业组末作业
+ Fail_Rtr_Itrv_Tm,--失败重试间隔时间
+ Job_Grp_ID,--作业组编号，作业组实例编号，作业流：实例编号（14位时间戳+G+4位顺序号）+2位顺序编号
+ Aschn_Tsk_Dsc,--异步任务描述，任务执行描述
+ Tsk_Pcs_Dt,--任务处理日期，任务处理日期，用于数据库分区
+ Tms,
+ Oprgday_prd,
+ VNo,
+ Dac_Verf,
+ TXN_ITT_CHNL_CGY_CODE,
+ TXN_ITT_CHNL_ID,
+ Multi_Tenancy_Id,
+ Rsrv_Fld_Dsc)
+values (
+           #{jobTskExmpId, jdbcType= VARCHAR},
+    #{jobDefId, jdbcType= VARCHAR},
+    #{tskDefId, jdbcType= VARCHAR},
+    #{sglTskId, jdbcType= VARCHAR},
+    #{jobNm, jdbcType= VARCHAR},
+    #{jobDescription, jdbcType= VARCHAR},
+    #{btchpcsJobLvl, jdbcType= VARCHAR},
+    #{failCnt, jdbcType= VARCHAR},
+    #{svcCmptNm, jdbcType= VARCHAR},
+    #{pshBfrPcsgSvcNm, jdbcType= VARCHAR},
+    #{pshAfPcsgSvcNm, jdbcType= VARCHAR},
+    #{ovtmTm, jdbcType= VARCHAR},
+    #{crtTms, jdbcType= VARCHAR},
+    #{plnSttm, jdbcType= VARCHAR},
+    #{plnEdtm, jdbcType= VARCHAR},
+    #{execSttm, jdbcType= VARCHAR},
+    #{execEdtm, jdbcType= VARCHAR},
+    #{alrdyFailCnt, jdbcType= VARCHAR},
+    #{jobExmpExecStcd, jdbcType= VARCHAR},
+    #{jobExmpAsstStcd, jdbcType= VARCHAR},
+    #{jobCallFcnTpcd, jdbcType= VARCHAR},
+    #{failRtrItrvTm, jdbcType= VARCHAR},
+    #{jobGrpId, jdbcType= VARCHAR},
+    #{aschnTskDsc, jdbcType= VARCHAR},
+    #{tskPcsDt, jdbcType= VARCHAR},
+    #{tms, jdbcType= VARCHAR},
+    #{oprgdayPrd, jdbcType= VARCHAR},
+    #{vno, jdbcType= VARCHAR},
+    #{dacVerf, jdbcType= VARCHAR},
+    #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    #{txnIttChnlId, jdbcType= VARCHAR},
+    #{multiTenancyId, jdbcType= VARCHAR},
+    #{rsrvFldDsc, jdbcType= CLOB}
+);
+
+insert into S08T1_JOB_EXMP_REL
+(Job_Tsk_Exmp_ID,--作业任务实例编号，作业实例编号，单作业：等同于单次任务标识 作业流：作业组实例编号+3位顺序号
+ Frt_Job_Exmp_ID,--前置作业实例编号，#前置作业实例编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+ SGL_TSK_ID,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+ Frt_Job_Compl_StCd,--前置作业完成状态代码，0-未完成，1-已完成
+ Tsk_Pcs_Dt,--任务处理日期，任务处理日期，用于数据库分区
+ Tms,
+ Oprgday_prd,
+ VNo,
+ Dac_Verf,
+ TXN_ITT_CHNL_CGY_CODE,
+ TXN_ITT_CHNL_ID,
+ Multi_Tenancy_Id,
+ Rsrv_Fld_Dsc)
+values (
+           #{jobTskExmpId, jdbcType= VARCHAR},
+    #{frtJobExmpId, jdbcType= VARCHAR},
+    #{sglTskId, jdbcType= VARCHAR},
+    #{frtJobComplStcd, jdbcType= VARCHAR},
+    #{tskPcsDt, jdbcType= VARCHAR},
+    #{tms, jdbcType= VARCHAR},
+    #{oprgdayPrd, jdbcType= VARCHAR},
+    #{vno, jdbcType= VARCHAR},
+    #{dacVerf, jdbcType= VARCHAR},
+    #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    #{txnIttChnlId, jdbcType= VARCHAR},
+    #{multiTenancyId, jdbcType= VARCHAR},
+    #{rsrvFldDsc, jdbcType= VARCHAR}
+);
+---------------------------------------------instance流程-----------------------------------------------------
+select KEYID                 as keyid,--执行控制ID
+       EXCUTESTATUS          as excutestatus,--执行状态
+       KEYDESC               as keydesc,--描述
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
+from S08T1_EXECUTABLE_REGISTER
+where KEYID = 'ab.instance.dispatch.global';
+
+select CD_VAL from S00T1_LIST_PARVAL where PARM_SN='1000080001' and TECH_CD_VAL='zeroBasket';--2  0开1关
+select CD_VAL from S00T1_LIST_PARVAL where PARM_SN='1000080001' and TECH_CD_VAL='nonZeroBaskets';--3  0开1关
+SELECT *
+FROM S08T1_JOB_EXMP
+where Job_Exmp_Exec_StCd = '0';--作业实例执行状态代码，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消
+--AND Pln_StTm <= #{plnSttm, jdbcType=VARCHAR};
+select Job_Tsk_Exmp_ID       as jobTskExmpId,--作业任务实例编号，作业实例编号，单作业：等同于单次任务标识 作业流：作业组实例编号+3位顺序号
+       Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       SGL_TSK_ID            as sglTskId,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+       Job_Nm                as jobNm,--作业名称，作业名称
+       JOB_DESCRIPTION       as jobDescription,--作业描述，作业描述
+       BtchPcs_Job_Lvl       as btchpcsJobLvl,--批处理作业级别，作业优先级
+       Fail_Cnt              as failCnt,--失败次数，最大重新执行次数
+       Svc_Cmpt_Nm           as svcCmptNm,--产品部件号，所需调用的Service的Spring容器bean-id
+       Psh_Bfr_Pcsg_Svc_Nm   as pshBfrPcsgSvcNm,--推送前处理服务名，前处理服务组件名，用于通知应用进行前处理，并返回待处理数据列表及是否需要后续查询和查询键值，需实现IPreProcessService接口
+       Psh_Af_Pcsg_Svc_Nm    as pshAfPcsgSvcNm,--推送后处理服务名，后前处理服务组件名，需实现IPostProcessService接口
+       Ovtm_Tm               as ovtmTm,--超时时间，任务实例的超时时间，不填则默认2小时
+       Crt_Tms               as crtTms,--创建时间戳
+       Pln_StTm              as plnSttm,--计划开始时间，计划开始时间
+       Pln_Edtm              as plnEdtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+       Exec_StTm             as execSttm,--执行开始时间，实际开始时间
+       Exec_EdTm             as execEdtm,--执行结束时间，结束时间
+       Alrdy_Fail_Cnt        as alrdyFailCnt,--已失败次数，作业已经失败次数
+       Job_Exmp_Exec_StCd    as jobExmpExecStcd,--作业实例执行状态代码，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消
+       Job_Exmp_Asst_StCd    as jobExmpAsstStcd,--作业实例辅助状态代码，1-正常执行成功，2-跳过并成功，3-异常失败，4-超时失败，5-人为终止失败
+       Job_Call_Fcn_TpCd     as jobCallFcnTpcd,--作业调用功能类型代码，区分作业调用的功能，可能是1-调用P8功能、2-调用脚本功能、3-调用分布式平台，4-任务首作业、5-任务末作业、6-作业组首作业、7-作业组末作业
+       Fail_Rtr_Itrv_Tm      as failRtrItrvTm,--失败重试间隔时间
+       Job_Grp_ID            as jobGrpId,--作业组编号，作业组实例编号，作业流：实例编号（14位时间戳+G+4位顺序号）+2位顺序编号
+       Aschn_Tsk_Dsc         as aschnTskDsc,--异步任务描述，任务执行描述
+       Tsk_Pcs_Dt            as tskPcsDt,--务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
+from S08T1_JOB_EXMP
+where Job_Tsk_Exmp_ID = '190612171602682SDEM0038z';
+
+select SGL_TSK_ID            as sglTskId,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       Csz_Txn_Nm            as cszTxnNm,--定制交易名称，任务名称/任务实例名称，客户给批量任务起的任务别名。
+       Apl_Btch_No           as aplBtchNo,--应用批次号，每个异步应用场景自己指定的编号，应用组自己决定即可，无需全局唯一，如果应用组自己有唯一性需求，需自行保证
+       Lvl1_Cl               as lvl1Cl,--一级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+       Lvl2_Cl               as lvl2Cl,--二级分类，各项目指定的用于查询的分类编号，与各项目组自身情况相关
+       PD_Cmpt_No            as pdCmptNo,--产品部件号，如11,21等
+       JFRM_TSK_EXEC_ST_CD   as jfrmTskExecStCd,--Java框架任务执行状态代码，任务实例状态，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消，9-年结暂停，待加入：等待前置作业执行、跳过并成功、人为终止、超时终止、异常终止
+       Rsrvtn_StTm           as rsrvtnSttm,--预约开始时间，预约开始时间
+       Pln_StTm              as plnSttm,--计划开始时间，计划开始时间
+       Pln_Edtm              as plnEdtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+       Exec_StTm             as execSttm,--执行开始时间，实际开始时间
+       Exec_EdTm             as execEdtm,--执行结束时间，结束时间
+       Crt_Tms               as crtTms,--创建时间戳
+       Aschn_Tsk_TpCd        as aschnTskTpcd,--异步任务类型代码，区分任务是单作业任务还是作业流任务，1-单作业任务，2-作业流任务
+       Tsk_Exmp_Beg_Job_ID   as tskExmpBegJobId,--任务实例起始作业编号，任务实例首作业编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+       Tsk_Exmp_End_Job_ID   as tskExmpEndJobId,--任务实例末作业编号，任务实例末作业编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+       Aschn_Tsk_Dsc         as aschnTskDsc,--异步任务描述，任务执行描述
+       CshPbMsgRpDmn_Inf     as cshpbmsgrpdmnInf,
+       Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
+from S08T1_ASCHN_TSK_EXMP
+where SGL_TSK_ID = '190612171602682SDEM0038z';
+
+select Job_Tsk_Exmp_ID       as jobTskExmpId,--作业任务实例编号，作业实例编号，单作业：等同于单次任务标识 作业流：作业组实例编号+3位顺序号
+       Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+       Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+       SGL_TSK_ID            as sglTskId,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+       Job_Nm                as jobNm,--作业名称，作业名称
+       JOB_DESCRIPTION       as jobDescription,--作业描述，作业描述
+       BtchPcs_Job_Lvl       as btchpcsJobLvl,--批处理作业级别，作业优先级
+       Fail_Cnt              as failCnt,--失败次数，最大重新执行次数
+       Svc_Cmpt_Nm           as svcCmptNm,--产品部件号，所需调用的Service的Spring容器bean-id
+       Psh_Bfr_Pcsg_Svc_Nm   as pshBfrPcsgSvcNm,--推送前处理服务名，前处理服务组件名，用于通知应用进行前处理，并返回待处理数据列表及是否需要后续查询和查询键值，需实现IPreProcessService接口
+       Psh_Af_Pcsg_Svc_Nm    as pshAfPcsgSvcNm,--推送后处理服务名，后前处理服务组件名，需实现IPostProcessService接口
+       Ovtm_Tm               as ovtmTm,--超时时间，任务实例的超时时间，不填则默认2小时
+       Crt_Tms               as crtTms,--创建时间戳
+       Pln_StTm              as plnSttm,--计划开始时间，计划开始时间
+       Pln_Edtm              as plnEdtm,--计划结束时间，计划结束时间=计划开始时间+超时时间
+       Exec_StTm             as execSttm,--执行开始时间，实际开始时间
+       Exec_EdTm             as execEdtm,--执行结束时间，结束时间
+       Alrdy_Fail_Cnt        as alrdyFailCnt,--已失败次数，作业已经失败次数
+       Job_Exmp_Exec_StCd    as jobExmpExecStcd,--作业实例执行状态代码，0-待执行，1-执行中，2-执行成功，3-执行失败，4-取消
+       Job_Exmp_Asst_StCd    as jobExmpAsstStcd,--作业实例辅助状态代码，1-正常执行成功，2-跳过并成功，3-异常失败，4-超时失败，5-人为终止失败
+       Job_Call_Fcn_TpCd     as jobCallFcnTpcd,--作业调用功能类型代码，区分作业调用的功能，可能是1-调用P8功能、2-调用脚本功能、3-调用分布式平台，4-任务首作业、5-任务末作业、6-作业组首作业、7-作业组末作业
+       Fail_Rtr_Itrv_Tm      as failRtrItrvTm,--失败重试间隔时间
+       Job_Grp_ID            as jobGrpId,--作业组编号，作业组实例编号，作业流：实例编号（14位时间戳+G+4位顺序号）+2位顺序编号
+       Aschn_Tsk_Dsc         as aschnTskDsc,--异步任务描述，任务执行描述
+       Tsk_Pcs_Dt            as tskPcsDt,--务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
+from S08T1_JOB_EXMP
+where SGL_TSK_ID = '190612171602682SDEM0038z';
+select Job_Tsk_Exmp_ID       as jobTskExmpId,--作业任务实例编号，作业实例编号，单作业：等同于单次任务标识 作业流：作业组实例编号+3位顺序号
+       Frt_Job_Exmp_ID       as frtJobExmpId,--前置作业实例编号，#前置作业实例编号，作业流：作业组编号（14位时间戳+G+6位顺序号）+3位顺序编号
+       SGL_TSK_ID            as sglTskId,--单次任务标识，任务实例编号，单作业：17位时间戳+S+6位顺序号 作业流：14位时间戳+G+4位顺序号
+       Frt_Job_Compl_StCd    as frtJobComplStcd,--前置作业完成状态代码，0-未完成，1-已完成
+       Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
+from S08T1_JOB_EXMP_REL
+where SGL_TSK_ID = '190612171602682SDEM0038z';
+update
+    S08T1_JOB_EXMP
+set Job_Def_ID = #{jobDefId, jdbcType= VARCHAR},
+    Tsk_Def_ID = #{tskDefId, jdbcType= VARCHAR},
+    SGL_TSK_ID = #{sglTskId, jdbcType= VARCHAR},
+    Job_Nm = #{jobNm, jdbcType= VARCHAR},
+    JOB_DESCRIPTION = #{jobDescription, jdbcType= VARCHAR},
+    BtchPcs_Job_Lvl = #{btchpcsJobLvl, jdbcType= VARCHAR},
+    Fail_Cnt = #{failCnt, jdbcType= VARCHAR},
+    Svc_Cmpt_Nm = #{svcCmptNm, jdbcType= VARCHAR},
+    Psh_Bfr_Pcsg_Svc_Nm = #{pshBfrPcsgSvcNm, jdbcType= VARCHAR},
+    Psh_Af_Pcsg_Svc_Nm = #{pshAfPcsgSvcNm, jdbcType= VARCHAR},
+    Ovtm_Tm = #{ovtmTm, jdbcType= VARCHAR},
+    Crt_Tms = #{crtTms, jdbcType= VARCHAR},
+    Pln_StTm = #{plnSttm, jdbcType= VARCHAR},
+    Pln_Edtm = #{plnEdtm, jdbcType= VARCHAR},
+    Exec_StTm = #{execSttm, jdbcType= VARCHAR},
+    Exec_EdTm = #{execEdtm, jdbcType= VARCHAR},
+    Alrdy_Fail_Cnt = #{alrdyFailCnt, jdbcType= VARCHAR},
+    Job_Exmp_Exec_StCd = #{jobExmpExecStcd, jdbcType= VARCHAR},
+    Job_Exmp_Asst_StCd = #{jobExmpAsstStcd, jdbcType= VARCHAR},
+    Job_Call_Fcn_TpCd = #{jobCallFcnTpcd, jdbcType= VARCHAR},
+    Fail_Rtr_Itrv_Tm = #{failRtrItrvTm, jdbcType= VARCHAR},
+    Job_Grp_ID = #{jobGrpId, jdbcType= VARCHAR},
+    Aschn_Tsk_Dsc = #{aschnTskDsc, jdbcType= VARCHAR},
+    Tsk_Pcs_Dt = #{tskPcsDt, jdbcType= VARCHAR},
+    Tms = #{tmsInDo, jdbcType= VARCHAR},
+    Oprgday_prd = #{oprgdayPrd, jdbcType= VARCHAR},
+    VNo = VNo + 1,
+    Dac_Verf = #{dacVerf, jdbcType= VARCHAR},
+    TXN_ITT_CHNL_CGY_CODE = #{txnIttChnlCgyCode, jdbcType= VARCHAR},
+    TXN_ITT_CHNL_ID = #{txnIttChnlId, jdbcType= VARCHAR},
+    Multi_Tenancy_Id = #{multiTenancyId, jdbcType= VARCHAR},
+    Rsrv_Fld_Dsc = #{rsrvFldDsc, jdbcType= CLOB}
+where
+    Job_Tsk_Exmp_ID=#{jobTskExmpId
+    , jdbcType= VARCHAR}
+    and
+    Job_Exmp_Exec_StCd=#{oldJobExmpExecStcd
+    , jdbcType= VARCHAR};
+
+select * from S08T1_JOB_EXMP;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+Job_Def_ID            as jobDefId,--作业定义编号，作业定义编号，单作业：同任务编号17位时间戳+R+6位顺序号 作业流：作业组编号（14位时间戳+F+6位顺序号）+3位顺序编号
+Tsk_Def_ID            as tskDefId,--任务定义编号，任务定义编号，单作业：17位时间戳+R+6位顺序号 作业流：14位时间戳+F+4位顺序号
+Job_Nm                as jobNm,--作业名称，作业名称
+JOB_DESCRIPTION       as jobDescription,--作业描述，作业描述
+BtchPcs_Job_Lvl       as btchpcsJobLvl,--批处理作业级别，作业优先级
+Fail_Cnt              as failCnt,--失败次数，最大重新执行次数
+Svc_Cmpt_Nm           as svcCmptNm,--产品部件号，所需调用的Service的Spring容器bean-id
+Psh_Bfr_Pcsg_Svc_Nm   as pshBfrPcsgSvcNm,--推送前处理服务名，前处理服务组件名，用于通知应用进行前处理，并返回待处理数据列表及是否需要后续查询和查询键值，需实现IPreProcessService接口
+Psh_Af_Pcsg_Svc_Nm    as pshAfPcsgSvcNm,--推送后处理服务名，后前处理服务组件名，需实现IPostProcessService接口
+Ovtm_Tm               as ovtmTm,--超时时间，任务实例的超时时间，不填则默认2小时
+Job_Grp_Def_ID        as jobGrpDefId,--作业组定义编号，作业组定义编号，作业流：任务编号（14位时间戳+F+4位顺序号）+2位顺序编号
+Job_Call_Fcn_TpCd     as jobCallFcnTpcd,--作业调用功能类型代码，区分作业调用的功能，可能是1-调用P8功能、2-调用脚本功能、3-调用分布式平台，4-任务首作业、5-任务末作业、6-作业组首作业、7-作业组末作业
+Fail_Rtr_Itrv_Tm      as failRtrItrvTm,--失败重试间隔时间
+Tsk_Pcs_Dt            as tskPcsDt,--任务处理日期，任务处理日期，用于数据库分区
+Tms                   as tms,--时间戳
+Oprgday_prd           as oprgdayPrd,--营业日期
+VNo                   as vno,--version
+Dac_Verf              as dacVerf,--校验字段
+TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,--交易发起渠道类别
+TXN_ITT_CHNL_ID       as txnIttChnlId,--交易发起渠道编号
+Multi_Tenancy_Id      as multiTenancyId,--多实体标识
+Rsrv_Fld_Dsc          as rsrvFldDsc--预留字段

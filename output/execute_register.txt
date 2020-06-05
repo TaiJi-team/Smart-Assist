@@ -1,0 +1,16 @@
+keyid
+excutestatus
+keydesc
+tms
+oprgday_prd
+vno
+dac_verf
+txn_itt_chnl_cgy_code
+txn_itt_chnl_id
+multi_tenancy_id
+rsrv_fld_dsc
+----------------------------- 
+执行控制ID
+执行状态
+描述
+

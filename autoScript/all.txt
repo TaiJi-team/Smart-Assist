@@ -1,0 +1,38 @@
+1. ssh
+
+ssh -p 2222 caeassoc@caeassociation.com
+
+caeassoc
+Cae@6478653066
+
+
+pscp caeassoc@caeassociation.com:/home/caeassoc/www/website/home.html E:\work-dir\project-website\deploy\website\
+
+
+pscp E:\work-dir\project-website\deploy\website\showCase.html caeassoc@caeassociation.com:/home/caeassoc/www/website/
+
+
+2. delete file
+
+@echo off 
+ 
+echo 正在删除zip格式文件,请稍后...
+del %cd%\*.zip
+IF ERRORLEVEL 1 ECHO 文件删除失败
+IF ERRORLEVEL 0 ECHO 文件删除成功
+ 
+rem choice延时3秒,时间精确，CPU占用低，是最佳选择
+choice /t 3 /d y /n >nul 
+ 
+exit
+
+2.1判断文件是否存在
+SET SourceFile=%cd%\1.exe
+SET GenFile1=%cd%\2.exe
+ 
+if exist %SourceFile% (
+    copy %SourceFile% %GenFile1%
+)
+
+
+

@@ -1,0 +1,11 @@
+KEYID                 as keyid,--执行控制ID
+       EXCUTESTATUS          as excutestatus,--执行状态
+       KEYDESC               as keydesc,--描述
+       Tms                   as tms,
+       Oprgday_prd           as oprgdayPrd,
+       VNo                   as vno,
+       Dac_Verf              as dacVerf,
+       TXN_ITT_CHNL_CGY_CODE as txnIttChnlCgyCode,
+       TXN_ITT_CHNL_ID       as txnIttChnlId,
+       Multi_Tenancy_Id      as multiTenancyId,
+       Rsrv_Fld_Dsc          as rsrvFldDsc
