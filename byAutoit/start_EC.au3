@@ -1,6 +1,6 @@
 ; fffff
 Run("C:\Program Files (x86)\Sangfor\SSL\EasyConnect\EasyConnect.exe")
-Dim $d=WinWaitActive("[CLASS:#dlgWindow_1]", "", 10)
+Dim $d=WinWaitActive("[CLASS:#dlgWindow_1]", "", 12)
 
 ;or use ControlClick
 MouseClick("left", 783, 393, 1)
