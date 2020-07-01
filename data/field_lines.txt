@@ -1,0 +1,31 @@
+[md_exchange_metadata](交换元数据表)
+交换元数据编码	exchange_metadata_id	bigint		主键
+资源编码	resource_code	varchar(255)			
+资源名称	resource_name	varchar(255)			
+资源归属方	resource_owner	varchar(255)			
+资源订阅方	resource_subscriber	varchar(255)			
+订阅类型	subscribe_type	char(1)			1-文件，2-数据库，3-API，4-数据库
+交换来源	exchange_source	varchar(255)			数据提供方逻辑节点编码
+交换目的	exchange_target	varchar(255)			数据订阅方逻辑节点编码
+交换成因	exchange_reason	varchar(20)			形成交换元数据的原因，1-归集，2-订阅
+交换场景	exchange_scene	char(2)			1-数据库-数据库，2-数据库-区块链
+增量同步策略	incremental_synchronization_strategy	char(1)			1-批次号，2-主键，3-时间戳
+交换状态	exchange_state	char(1)			1-启用，2-停用，3-废弃
+有效状态	effective_state	char(1)			1-有效，2-失效
+增量标识	incremental_flag	char(1)			1-是，2-否
+初始化标识	initialize_flag	char(1)			1-是，2-否
+审核通过时间	audit_pass_time	datetime			
+审核通过时间	audit_pass_time	datetime			
+创建人	create_by	varchar(255)			
+创建时间	create_time	datetime			
+更新人	update_by	varchar(255)			
+更新时间	update_time	datetime			
+时间戳	tms	timestamp			
+版本号	vno	char(9)			
+DAC校验	dac_verf	char(16)			
+租户标识	tenant	char(12)			
+渠道类型编码	txn_itt_chnl_cgy_code	char(8)			
+渠道编号	txn_itt_chnl_id	char(23)			
+预留字段1	reserve_1	varchar(255)			
+预留字段2	reserve_2	varchar(255)			
+预留字段3	reserve_3	varchar(255)			
